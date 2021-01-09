@@ -1,5 +1,6 @@
 <template>
   <body>
+    <tweeter-header></tweeter-header>
     <main>
       <div id="login">
         <form action="" id="login__form">
@@ -39,7 +40,10 @@
 </template>
 
 <script>
+import TweeterHeader from "../components/TweeterHeader.vue";
+
 export default {
+  components: { TweeterHeader },
   name: "Login",
 
   data() {

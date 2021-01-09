@@ -4,25 +4,25 @@ import router from "./router/index.js";
 import axios from "axios";
 import Vuex from "vuex";
 import cookies from "vue-cookies";
-import { library } from "@fortawesome/fontawesome-svg-core";
-import {
-  faHandRock,
-  faHandScissors,
-  faHandPaper,
-  faAngleRight,
-  faAngleLeft,
-  faInfo,
-} from "@fortawesome/free-solid-svg-icons";
+// import { library } from "@fortawesome/fontawesome-svg-core";
+// import {
+//   faHandRock,
+//   faHandScissors,
+//   faHandPaper,
+//   faAngleRight,
+//   faAngleLeft,
+//   faInfo,
+// } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
-library.add(
-  faHandRock,
-  faHandScissors,
-  faHandPaper,
-  faAngleRight,
-  faAngleLeft,
-  faInfo
-);
+// library.add(
+//   faHandRock,
+//   faHandScissors,
+//   faHandPaper,
+//   faAngleRight,
+//   faAngleLeft,
+//   faInfo
+// );
 
 Vue.component("font-awesome-icon", FontAwesomeIcon);
 
