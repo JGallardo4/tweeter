@@ -30,6 +30,21 @@ Vue.config.productionTip = false;
 Vue.prototype.$axios = axios;
 Vue.use(Vuex);
 
+var redirect = function(route) {
+  if (router.currentRoute != route) {
+    router.push(route).catch((error) => {
+      if (
+        error.name !== "NavigationDuplicated" &&
+        !error.message.includes(
+          "Avoided redundant navigation to current location"
+        )
+      ) {
+        console.log(error);
+      }
+    });
+  }
+};
+
 const store = new Vuex.Store({
   state: {
     isAuthenticated: true,
@@ -59,28 +74,14 @@ const store = new Vuex.Store({
             if (response.status == 200) {
               cookies.set("loginToken", response.data.token, "1h");
               commit("LOG_IN");
-              if (router.currentRoute != "/") {
-                router.push("/").catch((error) => {
-                  // Ignore the vuex error regarding redundant navigation
-                  if (
-                    error.name !== "NavigationDuplicated" &&
-                    !error.message.includes(
-                      "Avoided redundant navigation to current location"
-                    )
-                  ) {
-                    // But print any other errors to the console
-                    console.log(error);
-                  }
-                });
-              }
+              redirect("/");
               resolve(response);
             } else {
               reject(response);
             }
           })
-          .catch((erroror) => {
-            console.log(erroror);
-            reject(erroror);
+          .catch((error) => {
+            reject(error);
           });
       });
     },
@@ -88,39 +89,13 @@ const store = new Vuex.Store({
     logOut({ commit }) {
       commit("LOG_OUT");
       cookies.remove("loginToken");
-      if (router.currentRoute != "login") {
-        router.push("login").catch((error) => {
-          // Ignore the vuex error regarding redundant navigation
-          if (
-            error.name !== "NavigationDuplicated" &&
-            !error.message.includes(
-              "Avoided redundant navigation to current location"
-            )
-          ) {
-            // But print any other errors to the console
-            console.log(error);
-          }
-        });
-      }
+      redirect("login");
     },
 
     checkLogin({ commit, dispatch }) {
       if (cookies.get("loginToken") == "QpwL5tke4Pnpja7X4") {
         commit("LOG_IN");
-        if (router.currentRoute != "/") {
-          router.push("/").catch((error) => {
-            // Ignore the vuex error regarding redundant navigation
-            if (
-              error.name !== "NavigationDuplicated" &&
-              !error.message.includes(
-                "Avoided redundant navigation to current location"
-              )
-            ) {
-              // But print any other errors to the console
-              console.log(error);
-            }
-          });
-        }
+        redirect("/");
       } else {
         dispatch("logOut");
       }

@@ -75,21 +75,11 @@ export default {
 
   methods: {
     logIn() {
-      this.$store
-        .dispatch("logIn", this.input)
-        .then(
-          // on success
-          () => {},
-
-          // on fail
-          () => {
-            this.input.password = "";
-            this.error = true;
-          }
-        )
-        .catch((error) => {
-          console.log(error);
-        });
+      this.$store.dispatch("logIn", this.input).catch((error) => {
+        this.input.password = "";
+        this.error = true;
+        console.log(error);
+      });
     },
   },
 };
