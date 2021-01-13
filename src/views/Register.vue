@@ -2,10 +2,10 @@
   <body>
     <tweeter-header></tweeter-header>
     <main>
-      <div id="login">
-        <form action="" id="login__form">
-          <fieldset id="login__fieldset">
-            <legend>Login</legend>
+      <div id="register">
+        <form action="" id="register__form">
+          <fieldset id="register__fieldset">
+            <legend>Register</legend>
 
             <p id="username-input">
               <label for="username">Username</label>
@@ -27,7 +27,9 @@
               />
             </p>
 
-            <button @click.prevent="logIn()" id="submit-login">Submit</button>
+            <button @click.prevent="register()" id="submit-register">
+              Register
+            </button>
 
             <p id="error-message" v-if="error">
               There was an error with your username and/or password.
@@ -44,7 +46,7 @@ import TweeterHeader from "../components/TweeterHeader.vue";
 
 export default {
   components: { TweeterHeader },
-  name: "Login",
+  name: "register",
 
   data() {
     return {
@@ -55,10 +57,6 @@ export default {
 
       error: false,
     };
-  },
-
-  beforeCreate() {
-    this.$store.dispatch("checkLogin");
   },
 
   watch: {
@@ -75,21 +73,13 @@ export default {
 
   methods: {
     logIn() {
-      this.$store
-        .dispatch("logIn", this.input)
-        .then(
-          // on success
-          () => {},
-
-          // on fail
-          () => {
-            this.input.password = "";
-            this.error = true;
-          }
-        )
-        .catch((error) => {
-          console.log(error);
-        });
+      this.$store.dispatch("logIn", this.input).finally((response) => {
+        console.log(response);
+        if (!response) {
+          this.input.password = "";
+          this.error = true;
+        }
+      });
     },
   },
 };
@@ -112,7 +102,7 @@ $fullhd-min: 1216px;
 }
 
 @media screen and (min-width: $desktop-min) {
-  #login__form {
+  #register__form {
     @include desktop-layout;
   }
 }
@@ -148,18 +138,18 @@ $fullhd-min: 1216px;
 }
 @include formReset;
 
-#login {
+#register {
   display: grid;
   place-items: center;
   min-height: 100vh;
   background: url("https://source.unsplash.com/random");
   background-size: cover;
-  #login__form {
+  #register__form {
     padding: 0.5rem;
     border-radius: 10px;
     background-color: white;
 
-    #login__fieldset {
+    #register__fieldset {
       padding: 1rem;
       display: grid;
       grid-template-columns: 1fr;
@@ -187,7 +177,7 @@ $fullhd-min: 1216px;
         grid-row: 2;
       }
 
-      #submit-login {
+      #submit-register {
         grid-row: 3;
         @include resetButton;
         border: 1px solid black;

@@ -52,15 +52,36 @@ const store = new Vuex.Store({
 
   actions: {
     logIn({ commit }, payload) {
-      axios.post("https://reqres.in/api/login", payload).then((response) => {
-        if (response.status == 200) {
-          cookies.set("loginToken", response.data.token, "1h");
-          commit("LOG_IN");
-          router.push("/");
-          return true;
-        } else {
-          return false;
-        }
+      return new Promise((resolve, reject) => {
+        axios
+          .post("https://reqres.in/api/login", payload)
+          .then((response) => {
+            if (response.status == 200) {
+              cookies.set("loginToken", response.data.token, "1h");
+              commit("LOG_IN");
+              if (router.currentRoute != "/") {
+                router.push("/").catch((error) => {
+                  // Ignore the vuex error regarding redundant navigation
+                  if (
+                    error.name !== "NavigationDuplicated" &&
+                    !error.message.includes(
+                      "Avoided redundant navigation to current location"
+                    )
+                  ) {
+                    // But print any other errors to the console
+                    console.log(error);
+                  }
+                });
+              }
+              resolve(response);
+            } else {
+              reject(response);
+            }
+          })
+          .catch((erroror) => {
+            console.log(erroror);
+            reject(erroror);
+          });
       });
     },
 
@@ -68,7 +89,18 @@ const store = new Vuex.Store({
       commit("LOG_OUT");
       cookies.remove("loginToken");
       if (router.currentRoute != "login") {
-        router.push("login");
+        router.push("login").catch((error) => {
+          // Ignore the vuex error regarding redundant navigation
+          if (
+            error.name !== "NavigationDuplicated" &&
+            !error.message.includes(
+              "Avoided redundant navigation to current location"
+            )
+          ) {
+            // But print any other errors to the console
+            console.log(error);
+          }
+        });
       }
     },
 
@@ -76,7 +108,18 @@ const store = new Vuex.Store({
       if (cookies.get("loginToken") == "QpwL5tke4Pnpja7X4") {
         commit("LOG_IN");
         if (router.currentRoute != "/") {
-          router.push("/");
+          router.push("/").catch((error) => {
+            // Ignore the vuex error regarding redundant navigation
+            if (
+              error.name !== "NavigationDuplicated" &&
+              !error.message.includes(
+                "Avoided redundant navigation to current location"
+              )
+            ) {
+              // But print any other errors to the console
+              console.log(error);
+            }
+          });
         }
       } else {
         dispatch("logOut");
