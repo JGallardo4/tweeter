@@ -99,7 +99,7 @@ const store = new Vuex.Store({
     },
 
     checkLogin({ commit, dispatch }) {
-      if (cookies.get("loginToken") === this.state.loginToken) {
+      if (cookies.get("loginToken") == this.state.loginToken) {
         commit("LOG_IN", this.state.loginToken);
         redirect("/");
       } else {

@@ -39,12 +39,7 @@
 
             <p id="birthdate-input">
               <label for="birthdate">Birthdate</label>
-              <input
-                type="text"
-                name="birthdate"
-                v-model="input.birthdate"
-                placeholder=""
-              />
+              <datepicker v-model="rawBirthdate" name="birthdate"></datepicker>
             </p>
 
             <p id="password-input">
@@ -76,9 +71,10 @@
 
 <script>
 import TweeterHeader from "../components/TweeterHeader.vue";
+import Datepicker from "vuejs-datepicker";
 
 export default {
-  components: { TweeterHeader },
+  components: { TweeterHeader, Datepicker },
   name: "register",
 
   data() {
@@ -91,8 +87,28 @@ export default {
         password: "",
       },
 
+      rawBirthdate: new Date(),
+
       error: false,
     };
+  },
+
+  computed: {
+    formattedBirthdate() {
+      var mydate =
+        this.rawBirthdate.toLocaleDateString("en-US", {
+          year: "numeric",
+        }) +
+        "-" +
+        this.rawBirthdate.toLocaleDateString("en-US", {
+          month: "2-digit",
+        }) +
+        "-" +
+        this.rawBirthdate.toLocaleDateString("en-US", {
+          day: "2-digit",
+        });
+      return mydate;
+    },
   },
 
   watch: {
@@ -105,16 +121,22 @@ export default {
         this.error = false;
       }
     },
+
+    rawBirthdate: function() {
+      this.input.birthdate = this.formattedBirthdate;
+    },
+  },
+
+  created() {
+    this.input.birthdate = this.formattedBirthdate;
   },
 
   methods: {
     register() {
-      this.$store.dispatch("register", this.input).finally((response) => {
-        console.log(response);
-        if (!response) {
-          this.input.password = "";
-          this.error = true;
-        }
+      this.$store.dispatch("register", this.input).catch((error) => {
+        this.input.password = "";
+        this.error = true;
+        console.log(error);
       });
     },
   },
