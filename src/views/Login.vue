@@ -33,6 +33,10 @@
               There was an error with your username and/or password.
             </p>
           </fieldset>
+
+          <router-link to="register">
+            <p>Register</p>
+          </router-link>
         </form>
       </div>
     </main>
