@@ -26,6 +26,9 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
 Vue.component("font-awesome-icon", FontAwesomeIcon);
 
+axios.defaults.headers.common["X-Api-Key"] =
+  "1Rj5dMCW6aOfA75kbtKt6Gcatc5M9Chc6IGwJKe4YdhDD";
+
 Vue.config.productionTip = false;
 Vue.prototype.$axios = axios;
 Vue.use(Vuex);
@@ -48,6 +51,7 @@ var redirect = function(route) {
 const store = new Vuex.Store({
   state: {
     isAuthenticated: true,
+    loginToken: "",
   },
 
   getters: {
@@ -57,11 +61,13 @@ const store = new Vuex.Store({
   },
 
   mutations: {
-    LOG_IN(state) {
+    LOG_IN(state, payload) {
       state.isAuthenticated = true;
+      state.loginToken = payload;
     },
     LOG_OUT(state) {
       state.isAuthenticated = false;
+      state.loginToken = "";
     },
   },
 
@@ -69,11 +75,11 @@ const store = new Vuex.Store({
     logIn({ commit }, payload) {
       return new Promise((resolve, reject) => {
         axios
-          .post("https://reqres.in/api/login", payload)
+          .post("https://tweeterest.ml/api/login", payload)
           .then((response) => {
-            if (response.status == 200) {
-              cookies.set("loginToken", response.data.token, "1h");
-              commit("LOG_IN");
+            if (response.status === 201) {
+              cookies.set("loginToken", response.data.loginToken, "1h");
+              commit("LOG_IN", response.data.loginToken);
               redirect("/");
               resolve(response);
             } else {
@@ -93,12 +99,32 @@ const store = new Vuex.Store({
     },
 
     checkLogin({ commit, dispatch }) {
-      if (cookies.get("loginToken") == "QpwL5tke4Pnpja7X4") {
-        commit("LOG_IN");
+      if (cookies.get("loginToken") === this.state.loginToken) {
+        commit("LOG_IN", this.state.loginToken);
         redirect("/");
       } else {
         dispatch("logOut");
       }
+    },
+
+    register({ commit }, payload) {
+      return new Promise((resolve, reject) => {
+        axios
+          .post("https://tweeterest.ml/api/users", payload)
+          .then((response) => {
+            if (response.status === 201) {
+              cookies.set("loginToken", response.data.loginToken, "1h");
+              commit("LOG_IN", response.data.loginToken);
+              redirect("/");
+              resolve(response);
+            } else {
+              reject(response);
+            }
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
     },
   },
 });

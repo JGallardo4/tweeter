@@ -1,6 +1,6 @@
 <template>
   <header>
-    <p id="site-title">Tweeter</p>
+    <router-link to="/"><p id="site-title">Tweeter</p></router-link>
   </header>
 </template>
 

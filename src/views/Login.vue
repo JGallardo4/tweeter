@@ -7,30 +7,20 @@
           <fieldset id="login__fieldset">
             <legend>Login</legend>
 
-            <p id="username-input">
-              <label for="username">Username</label>
-              <input
-                type="text"
-                name="username"
-                v-model="input.username"
-                placeholder="eve.holt@reqres.in"
-              />
+            <p id="email-input">
+              <label for="email">Email</label>
+              <input type="text" name="email" v-model="input.email" />
             </p>
 
             <p id="password-input">
               <label for="password">Password</label>
-              <input
-                type="password"
-                name="password"
-                v-model="input.password"
-                placeholder="cityslicka"
-              />
+              <input type="password" name="password" v-model="input.password" />
             </p>
 
-            <button @click.prevent="logIn()" id="submit-login">Submit</button>
+            <button @click.prevent="logIn()" id="submit-login">Log In</button>
 
             <p id="error-message" v-if="error">
-              There was an error with your username and/or password.
+              There was an error with your email and/or password.
             </p>
           </fieldset>
 
@@ -53,7 +43,7 @@ export default {
   data() {
     return {
       input: {
-        username: "",
+        email: "",
         password: "",
       },
 
@@ -66,7 +56,7 @@ export default {
   },
 
   watch: {
-    "input.username": function() {
+    "input.email": function() {
       this.error = false;
     },
 
@@ -173,7 +163,7 @@ $fullhd-min: 1216px;
         padding: 1rem;
       }
 
-      #username-input {
+      #email-input {
         grid-row: 1;
       }
 

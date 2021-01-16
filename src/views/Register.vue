@@ -7,13 +7,43 @@
           <fieldset id="register__fieldset">
             <legend>Register</legend>
 
+            <p id="email-input">
+              <label for="email">Email</label>
+              <input
+                type="text"
+                name="email"
+                v-model="input.email"
+                placeholder=""
+              />
+            </p>
+
             <p id="username-input">
               <label for="username">Username</label>
               <input
                 type="text"
                 name="username"
                 v-model="input.username"
-                placeholder="eve.holt@reqres.in"
+                placeholder=""
+              />
+            </p>
+
+            <p id="bio-input">
+              <label for="bio">Bio</label>
+              <input
+                type="text"
+                name="bio"
+                v-model="input.bio"
+                placeholder=""
+              />
+            </p>
+
+            <p id="birthdate-input">
+              <label for="birthdate">Birthdate</label>
+              <input
+                type="text"
+                name="birthdate"
+                v-model="input.birthdate"
+                placeholder=""
               />
             </p>
 
@@ -23,7 +53,7 @@
                 type="password"
                 name="password"
                 v-model="input.password"
-                placeholder="cityslicka"
+                placeholder=""
               />
             </p>
 
@@ -32,9 +62,12 @@
             </button>
 
             <p id="error-message" v-if="error">
-              There was an error with your username and/or password.
+              There was an error with your email and/or password.
             </p>
           </fieldset>
+          <router-link to="login">
+            <p>Login</p>
+          </router-link>
         </form>
       </div>
     </main>
@@ -51,7 +84,10 @@ export default {
   data() {
     return {
       input: {
+        email: "",
         username: "",
+        birthdate: "",
+        bio: "",
         password: "",
       },
 
@@ -60,7 +96,7 @@ export default {
   },
 
   watch: {
-    "input.username": function() {
+    "input.email": function() {
       this.error = false;
     },
 
@@ -72,8 +108,8 @@ export default {
   },
 
   methods: {
-    logIn() {
-      this.$store.dispatch("logIn", this.input).finally((response) => {
+    register() {
+      this.$store.dispatch("register", this.input).finally((response) => {
         console.log(response);
         if (!response) {
           this.input.password = "";
@@ -169,16 +205,7 @@ $fullhd-min: 1216px;
         padding: 1rem;
       }
 
-      #username-input {
-        grid-row: 1;
-      }
-
-      #password-input {
-        grid-row: 2;
-      }
-
       #submit-register {
-        grid-row: 3;
         @include resetButton;
         border: 1px solid black;
         background-color: black;
