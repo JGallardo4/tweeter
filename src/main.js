@@ -4,25 +4,11 @@ import router from "./router/index.js";
 import axios from "axios";
 import Vuex from "vuex";
 import cookies from "vue-cookies";
-// import { library } from "@fortawesome/fontawesome-svg-core";
-// import {
-//   faHandRock,
-//   faHandScissors,
-//   faHandPaper,
-//   faAngleRight,
-//   faAngleLeft,
-//   faInfo,
-// } from "@fortawesome/free-solid-svg-icons";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
-// library.add(
-//   faHandRock,
-//   faHandScissors,
-//   faHandPaper,
-//   faAngleRight,
-//   faAngleLeft,
-//   faInfo
-// );
+library.add(faUser);
 
 Vue.component("font-awesome-icon", FontAwesomeIcon);
 
@@ -51,7 +37,7 @@ var redirect = function(route) {
 const store = new Vuex.Store({
   state: {
     isAuthenticated: true,
-    loginToken: "",
+    user: "",
   },
 
   getters: {
@@ -61,13 +47,12 @@ const store = new Vuex.Store({
   },
 
   mutations: {
-    LOG_IN(state, payload) {
+    LOG_IN(state) {
       state.isAuthenticated = true;
-      state.loginToken = payload;
     },
     LOG_OUT(state) {
+      cookies.set("loginToken", "");
       state.isAuthenticated = false;
-      state.loginToken = "";
     },
   },
 
@@ -79,7 +64,7 @@ const store = new Vuex.Store({
           .then((response) => {
             if (response.status === 201) {
               cookies.set("loginToken", response.data.loginToken, "1h");
-              commit("LOG_IN", response.data.loginToken);
+              commit("LOG_IN");
               redirect("/");
               resolve(response);
             } else {
@@ -94,13 +79,13 @@ const store = new Vuex.Store({
 
     logOut({ commit }) {
       commit("LOG_OUT");
-      cookies.remove("loginToken");
+      console.log(cookies.get("loginToken"));
       redirect("login");
     },
 
     checkLogin({ commit, dispatch }) {
-      if (cookies.get("loginToken") == this.state.loginToken) {
-        commit("LOG_IN", this.state.loginToken);
+      if (cookies.get("loginToken") != null) {
+        commit("LOG_IN");
         redirect("/");
       } else {
         dispatch("logOut");
@@ -114,8 +99,7 @@ const store = new Vuex.Store({
           .then((response) => {
             if (response.status === 201) {
               cookies.set("loginToken", response.data.loginToken, "1h");
-              commit("LOG_IN", response.data.loginToken);
-              redirect("/");
+              commit("LOG_IN");
               resolve(response);
             } else {
               reject(response);

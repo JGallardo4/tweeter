@@ -1,24 +1,21 @@
 <template>
   <body>
-    <header>
-      <button id="logout-button" @click="logOut()">Logout</button>
-    </header>
+    <tweeter-header></tweeter-header>
     <main></main>
   </body>
 </template>
 
 <script>
+import TweeterHeader from "../components/TweeterHeader.vue";
 export default {
   name: "tweeter-main",
 
-  beforeCreate() {
-    this.$store.dispatch("checkLogin");
+  components: {
+    TweeterHeader,
   },
 
-  methods: {
-    logOut() {
-      this.$store.dispatch("logOut");
-    },
+  beforeCreate() {
+    this.$store.dispatch("checkLogin");
   },
 };
 </script>
@@ -67,30 +64,6 @@ header {
       background-color: white;
       color: black;
     }
-  }
-}
-
-#game {
-  padding: 1rem;
-  gap: 1rem;
-  display: grid;
-  grid-auto-columns: 1fr;
-  grid-template-rows: auto 1fr;
-  #player-selection {
-    grid-column: 1;
-    grid-row: 2;
-  }
-  #rules-graph {
-    grid-column: 1;
-    grid-row: 1;
-    justify-self: right;
-    margin: 2rem;
-    margin-top: 3rem;
-    margin-right: 3rem;
-  }
-  #game-display {
-    grid-column: 1;
-    grid-row: 3;
   }
 }
 
