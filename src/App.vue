@@ -2,6 +2,15 @@
   <router-view />
 </template>
 
+<script>
+export default {
+  created() {
+    this.$store.dispatch("checkLogin");
+    this.$store.dispatch("initializeStore");
+  },
+};
+</script>
+
 <style lang="scss">
 @mixin reset() {
   * {

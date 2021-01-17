@@ -48,25 +48,6 @@ export default {
 
 @include formReset;
 
-header {
-  display: flex;
-  justify-content: right;
-  padding: 1rem;
-  #logout-button {
-    @include resetButton;
-    border: 1px solid black;
-    background-color: black;
-    color: white;
-    font-weight: bold;
-    border-radius: 10px;
-    padding: 1rem;
-    &:hover {
-      background-color: white;
-      color: black;
-    }
-  }
-}
-
 @media screen and (min-width: 769px) {
   //
 }

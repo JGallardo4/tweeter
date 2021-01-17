@@ -24,8 +24,6 @@ const routes = [
     name: "Register",
     component: Register,
   },
-
-  // { path: "*", redirect: "/" },
 ];
 
 const router = new VueRouter({

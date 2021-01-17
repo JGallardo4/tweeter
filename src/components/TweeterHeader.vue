@@ -2,8 +2,10 @@
   <header>
     <router-link to="/"><p id="site-title">Tweeter</p></router-link>
     <section v-if="isLoggedIn" id="user-menu">
-      <router-link to="/" id="user-icon">
-        <font-awesome-icon icon="user" />
+      <router-link to="/" id="user-link">
+        <div id="user-icon"><font-awesome-icon icon="user" /></div>
+
+        <p id="username">{{ userName }}</p>
       </router-link>
       <button id="logout-button" @click="logOut()">Logout</button>
     </section>
@@ -16,7 +18,10 @@ export default {
 
   computed: {
     isLoggedIn() {
-      return this.$store.state.isAuthenticated;
+      return this.$store.getters.getIsAuthenticated;
+    },
+    userName() {
+      return this.$store.getters.getUserName;
     },
   },
 
@@ -52,8 +57,16 @@ header {
     display: flex;
     justify-content: right;
     padding: 1rem;
-    #user-icon {
-      padding: 1rem;
+    gap: 1rem;
+    #user-link {
+      display: flex;
+      #user-icon {
+        padding: 1rem;
+      }
+      #username {
+        display: grid;
+        place-items: center;
+      }
     }
     #logout-button {
       @include resetButton;

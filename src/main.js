@@ -3,6 +3,7 @@ import App from "./App.vue";
 import router from "./router/index.js";
 import axios from "axios";
 import Vuex from "vuex";
+import VuexPersistence from "vuex-persist";
 import cookies from "vue-cookies";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
@@ -34,25 +35,43 @@ var redirect = function(route) {
   }
 };
 
+const vuexLocal = new VuexPersistence({
+  storage: window.localStorage,
+});
+
 const store = new Vuex.Store({
   state: {
-    isAuthenticated: true,
-    user: "",
+    isAuthenticated: false,
+    userId: "",
+    userName: "",
   },
 
   getters: {
     getIsAuthenticated(state) {
       return state.isAuthenticated;
     },
+    getUserName(state) {
+      return state.userName;
+    },
   },
 
   mutations: {
-    LOG_IN(state) {
-      state.isAuthenticated = true;
+    SET_AUTHENTICATED(state, payload) {
+      state.isAuthenticated = payload;
     },
-    LOG_OUT(state) {
-      cookies.set("loginToken", "");
+
+    SET_USERID(state, payload) {
+      state.userId = payload;
+    },
+
+    SET_USERNAME(state, payload) {
+      state.userName = payload;
+    },
+
+    DELETE_USERDATA(state) {
       state.isAuthenticated = false;
+      state.userId = "";
+      state.userName = "";
     },
   },
 
@@ -63,8 +82,9 @@ const store = new Vuex.Store({
           .post("https://tweeterest.ml/api/login", payload)
           .then((response) => {
             if (response.status === 201) {
-              cookies.set("loginToken", response.data.loginToken, "1h");
-              commit("LOG_IN");
+              commit("SET_AUTHENTICATED", true);
+              commit("SET_USERID", response.data.userId);
+              commit("SET_USERNAME", response.data.username);
               redirect("/");
               resolve(response);
             } else {
@@ -78,17 +98,18 @@ const store = new Vuex.Store({
     },
 
     logOut({ commit }) {
-      commit("LOG_OUT");
-      console.log(cookies.get("loginToken"));
-      redirect("login");
+      commit("DELETE_USERDATA");
+      redirect("/login");
     },
 
-    checkLogin({ commit, dispatch }) {
-      if (cookies.get("loginToken") != null) {
-        commit("LOG_IN");
+    checkLogin({ dispatch }) {
+      if (this.getters.getIsAuthenticated) {
         redirect("/");
       } else {
-        dispatch("logOut");
+        console.log(router.currentRoute);
+        if (router.currentRoute != "/login") {
+          dispatch("logOut");
+        }
       }
     },
 
@@ -98,8 +119,9 @@ const store = new Vuex.Store({
           .post("https://tweeterest.ml/api/users", payload)
           .then((response) => {
             if (response.status === 201) {
-              cookies.set("loginToken", response.data.loginToken, "1h");
-              commit("LOG_IN");
+              commit("SET_AUTHENTICATED", true);
+              commit("SET_USERID", response.data.userId);
+              commit("SET_USERNAME", response.data.username);
               resolve(response);
             } else {
               reject(response);
@@ -110,10 +132,21 @@ const store = new Vuex.Store({
           });
       });
     },
+
+    initializeStore({ state }) {
+      if (window.localStorage.getItem("vuex")) {
+        this.replaceState(
+          Object.assign(state, JSON.parse(window.localStorage.getItem("state")))
+        );
+      }
+    },
   },
+
+  plugins: [vuexLocal.plugin],
 });
 
-new Vue({
+/* eslint-disable-next-line */
+window.vm = new Vue({
   router: router,
   axios: axios,
   store: store,
