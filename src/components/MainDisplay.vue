@@ -4,15 +4,15 @@
       <div id="tabs">
         <button
           v-for="tab in tabs"
-          v-bind:key="tab"
-          v-bind:class="['tab-button', { active: currentTab === tab }]"
+          :key="tab"
+          :class="['tab-button', { active: currentTab === tab }]"
           v-on:click="currentTab = tab"
         >
           {{ tab }}
         </button>
       </div>
 
-      <component v-bind:is="currentTabComponent" class="tab"> </component>
+      <component :is="currentTabComponent" class="tab"></component>
     </section>
   </section>
 </template>
@@ -21,12 +21,14 @@
 import MyStream from "../components/MyStream.vue";
 import Discover from "../components/Discover.vue";
 import MyTweets from "../components/MyTweets.vue";
+import NewTweet from "../components/NewTweet.vue";
 
 export default {
   components: {
     MyStream,
     Discover,
     MyTweets,
+    NewTweet,
   },
 
   name: "main-display",
@@ -34,15 +36,11 @@ export default {
   data: function() {
     return {
       currentTab: "My Stream",
-      tabs: ["My Stream", "Discover", "My Tweets"],
+      tabs: ["My Stream", "Discover", "My Tweets", "New Tweet"],
     };
   },
 
   computed: {
-    joke() {
-      return this.$store.getters.getJoke;
-    },
-
     currentTabComponent() {
       return this.currentTab
         .toLowerCase()

@@ -44,14 +44,37 @@ const store = new Vuex.Store({
     isAuthenticated: false,
     userId: "",
     userName: "",
+    loginToken: "",
   },
 
   getters: {
     getIsAuthenticated(state) {
       return state.isAuthenticated;
     },
+
     getUserName(state) {
       return state.userName;
+    },
+
+    getLoginToken(state) {
+      return state.loginToken;
+    },
+
+    getUserTweets(state) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get("https://tweeterest.ml/api/tweets", { userId: state.userId })
+          .then((response) => {
+            if (response.status === 200) {
+              resolve(response);
+            } else {
+              reject(response);
+            }
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
     },
   },
 
@@ -62,6 +85,10 @@ const store = new Vuex.Store({
 
     SET_USERID(state, payload) {
       state.userId = payload;
+    },
+
+    SET_LOGIN_TOKEN(state, payload) {
+      state.loginToken = payload;
     },
 
     SET_USERNAME(state, payload) {
@@ -85,6 +112,7 @@ const store = new Vuex.Store({
               commit("SET_AUTHENTICATED", true);
               commit("SET_USERID", response.data.userId);
               commit("SET_USERNAME", response.data.username);
+              commit("SET_LOGIN_TOKEN", response.data.loginToken);
               redirect("/");
               resolve(response);
             } else {
@@ -106,7 +134,6 @@ const store = new Vuex.Store({
       if (this.getters.getIsAuthenticated) {
         redirect("/");
       } else {
-        console.log(router.currentRoute);
         if (router.currentRoute != "/login") {
           dispatch("logOut");
         }
@@ -122,6 +149,7 @@ const store = new Vuex.Store({
               commit("SET_AUTHENTICATED", true);
               commit("SET_USERID", response.data.userId);
               commit("SET_USERNAME", response.data.username);
+              commit("SET_LOGIN_TOKEN", response.data.loginToken);
               resolve(response);
             } else {
               reject(response);
@@ -139,6 +167,31 @@ const store = new Vuex.Store({
           Object.assign(state, JSON.parse(window.localStorage.getItem("state")))
         );
       }
+    },
+
+    postTweet({ getters }, payload) {
+      console.log({
+        loginToken: getters.getLoginToken,
+        content: payload,
+      });
+      return new Promise((resolve, reject) => {
+        axios
+          .post("https://tweeterest.ml/api/tweets", {
+            loginToken: getters.getLoginToken,
+            content: payload,
+          })
+          .then((response) => {
+            if (response.status === 201) {
+              console.log(response);
+              resolve(response);
+            } else {
+              reject(response);
+            }
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
     },
   },
 
