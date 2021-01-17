@@ -1,17 +1,22 @@
 <template>
   <body>
     <tweeter-header></tweeter-header>
-    <main></main>
+    <main>
+      <main-display></main-display>
+    </main>
   </body>
 </template>
 
 <script>
 import TweeterHeader from "../components/TweeterHeader.vue";
+import MainDisplay from "../components/MainDisplay.vue";
+
 export default {
   name: "tweeter-main",
 
   components: {
     TweeterHeader,
+    MainDisplay,
   },
 
   beforeCreate() {
