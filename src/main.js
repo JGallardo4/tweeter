@@ -64,6 +64,10 @@ const store = new Vuex.Store({
     getUserTweets(state) {
       return state.allTweets.filter((tweet) => tweet.userId == state.userId);
     },
+
+    getAllTweets(state) {
+      return state.allTweets;
+    },
   },
 
   mutations: {
