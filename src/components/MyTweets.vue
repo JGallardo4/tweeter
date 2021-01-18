@@ -4,13 +4,13 @@
       Refresh
     </button>
 
-    <article v-for="tweet in tweets" :key="tweet">
-      {{ tweet.content }}
-    </article>
+    <tweet-grid :tweets="tweets"></tweet-grid>
   </section>
 </template>
 
 <script>
+import TweetGrid from "../components/TweetGrid.vue";
+
 export default {
   name: "my-tweets",
 
@@ -22,10 +22,40 @@ export default {
 
   methods: {
     refresh() {
+      this.$store.dispatch("refreshTweets");
       console.log(this.tweets);
     },
+  },
+
+  components: {
+    TweetGrid,
   },
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+@mixin resetButton() {
+  background: none;
+  color: inherit;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  outline: inherit;
+}
+
+#my-tweets {
+  grid-template-rows: auto 1fr;
+  #refresh-button {
+    justify-self: right;
+    @include resetButton;
+    padding: 1rem;
+    border-left: solid 1px black;
+    border-bottom: solid 1px black;
+
+    &:hover {
+      background-color: lightgreen;
+    }
+  }
+}
+</style>

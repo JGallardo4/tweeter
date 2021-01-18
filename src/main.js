@@ -6,10 +6,10 @@ import Vuex from "vuex";
 import VuexPersistence from "vuex-persist";
 import cookies from "vue-cookies";
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faUser } from "@fortawesome/free-solid-svg-icons";
+import { faUser, faTimes, faCrow } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
-library.add(faUser);
+library.add(faUser, faTimes, faCrow);
 
 Vue.component("font-awesome-icon", FontAwesomeIcon);
 
@@ -45,6 +45,7 @@ const store = new Vuex.Store({
     userId: "",
     userName: "",
     loginToken: "",
+    allTweets: [],
   },
 
   getters: {
@@ -61,20 +62,7 @@ const store = new Vuex.Store({
     },
 
     getUserTweets(state) {
-      return new Promise((resolve, reject) => {
-        axios
-          .get("https://tweeterest.ml/api/tweets", { userId: state.userId })
-          .then((response) => {
-            if (response.status === 200) {
-              resolve(response);
-            } else {
-              reject(response);
-            }
-          })
-          .catch((error) => {
-            reject(error);
-          });
-      });
+      return state.allTweets.filter((tweet) => tweet.userId == state.userId);
     },
   },
 
@@ -99,6 +87,10 @@ const store = new Vuex.Store({
       state.isAuthenticated = false;
       state.userId = "";
       state.userName = "";
+    },
+
+    SET_TWEETS(state, payload) {
+      state.allTweets = payload;
     },
   },
 
@@ -170,28 +162,33 @@ const store = new Vuex.Store({
     },
 
     postTweet({ getters }, payload) {
-      console.log({
+      var content = {
         loginToken: getters.getLoginToken,
         content: payload,
-      });
-      return new Promise((resolve, reject) => {
-        axios
-          .post("https://tweeterest.ml/api/tweets", {
-            loginToken: getters.getLoginToken,
-            content: payload,
-          })
-          .then((response) => {
-            if (response.status === 201) {
-              console.log(response);
-              resolve(response);
-            } else {
-              reject(response);
-            }
-          })
-          .catch((error) => {
-            reject(error);
-          });
-      });
+      };
+
+      axios
+        .post("https://tweeterest.ml/api/tweets", content)
+        .catch((response) => console.log(response));
+    },
+
+    refreshTweets({ commit, state }) {
+      axios
+        .get("https://tweeterest.ml/api/tweets", { userId: state.userId })
+        .then((response) => {
+          if (response.status === 200) {
+            commit("SET_TWEETS", response.data);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+
+    deleteTweet(state, payload) {
+      console.log(payload);
+
+      axios.delete("https://tweeterest.ml/api/tweets", payload);
     },
   },
 

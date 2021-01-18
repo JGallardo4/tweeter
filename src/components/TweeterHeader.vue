@@ -1,6 +1,11 @@
 <template>
   <header>
-    <router-link to="/"><p id="site-title">Tweeter</p></router-link>
+    <router-link to="/" id="logo">
+      <div id="tweeter-icon">
+        <font-awesome-icon icon="crow" />
+      </div>
+      <p id="site-title">Tweeter</p>
+    </router-link>
     <section v-if="isLoggedIn" id="user-menu">
       <router-link to="/" id="user-link">
         <div id="user-icon"><font-awesome-icon icon="user" /></div>
@@ -47,10 +52,12 @@ export default {
 header {
   display: flex;
   justify-content: space-between;
-  #site-title {
+  #logo {
+    #tweeter-icon {
+      font-size: xx-large;
+    }
     display: grid;
     align-items: center;
-    height: 100%;
     padding: 1rem;
   }
   #user-menu {

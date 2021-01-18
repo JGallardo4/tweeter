@@ -52,9 +52,10 @@ export default {
 
   methods: {
     postTweet() {
-      this.$store.dispatch("postTweet", this.input).catch((error) => {
-        console.log(error);
-      });
+      this.$store.dispatch("postTweet", this.input);
+      // .catch((error) => {
+      //   // console.log("error: " + error);
+      // });
     },
   },
 };

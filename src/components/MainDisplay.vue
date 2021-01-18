@@ -101,8 +101,6 @@ export default {
     grid-row: 2;
     min-height: 50vh;
     display: grid;
-    place-items: center;
-    padding: 2rem;
   }
 }
 </style>
