@@ -4,7 +4,22 @@
       <div id="delete-icon"><font-awesome-icon icon="times" /></div>
     </button>
 
-    <p id="tweet-content"><slot></slot></p>
+    <p id="tweet-content">{{ tweet.content }}</p>
+
+    <section id="tweet-info">
+      <button
+        v-if="tweet.userId != userId"
+        @click="followUser()"
+        id="follow-button"
+      >
+        <!-- <div id="tweeter-icon">
+          <font-awesome-icon icon="crow" />
+        </div> -->
+        <p>Follow user</p>
+      </button>
+      <p id="tweet-author">{{ tweet.username }}</p>
+      <p id="tweet-date">{{ tweet.createdAt }}</p>
+    </section>
   </article>
 </template>
 
@@ -13,8 +28,8 @@ export default {
   name: "Tweet",
 
   props: {
-    tweetId: {
-      type: Number,
+    tweet: {
+      type: Object,
     },
   },
 
@@ -22,16 +37,23 @@ export default {
     loginToken() {
       return this.$store.getters.getLoginToken;
     },
+    userId() {
+      return this.$store.getters.getUserId;
+    },
   },
 
   methods: {
     deleteTweet() {
-      console.log(this.loginToken);
-      console.log(this.tweetId);
       this.$store.dispatch("deleteTweet", {
         loginToken: this.loginToken,
-        tweetId: this.tweetId,
+        tweetId: this.tweet.tweetId,
       });
+
+      this.$store.dispatch("refreshTweets");
+    },
+
+    followUser() {
+      this.$store.dispatch("followUser", this.tweet.userId);
     },
   },
 };
@@ -51,7 +73,7 @@ export default {
 .tweet {
   display: grid;
   grid-template-columns: 1fr auto;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: auto 1fr auto;
 
   #delete-button {
     grid-column: 2;
@@ -66,6 +88,15 @@ export default {
   #tweet-content {
     grid-column: 1 / 3;
     grid-row: 2;
+    padding: 1rem;
+  }
+
+  #tweet-info {
+    grid-column: 1 / 3;
+    grid-row: 3;
+    display: flex;
+    justify-content: right;
+    gap: 1rem;
     padding: 1rem;
   }
 }

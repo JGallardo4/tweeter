@@ -1,12 +1,6 @@
 <template>
   <section class="tweet-grid">
-    <tweet
-      v-for="(tweet, id) in tweets"
-      :key="id"
-      class="tweet"
-      :tweetId="tweet.tweetId"
-    >
-      {{ tweet.content }}
+    <tweet v-for="(tweet, id) in tweets" :key="id" class="tweet" :tweet="tweet">
     </tweet>
   </section>
 </template>

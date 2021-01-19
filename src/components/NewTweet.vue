@@ -1,6 +1,6 @@
 <template>
   <section id="new-tweet">
-    <form action="" id="tweet__form">
+    <form action="" id="tweet__form" @submit.prevent="postTweet()">
       <fieldset id="tweet__fieldset">
         <legend>New Tweet</legend>
 
@@ -20,7 +20,7 @@
         <button
           :disabled="isOverLimit"
           :class="{ disabled: isOverLimit }"
-          @click="postTweet()"
+          type="submit"
           id="submit-tweet"
         >
           Post New Tweet
@@ -53,9 +53,6 @@ export default {
   methods: {
     postTweet() {
       this.$store.dispatch("postTweet", this.input);
-      // .catch((error) => {
-      //   // console.log("error: " + error);
-      // });
     },
   },
 };

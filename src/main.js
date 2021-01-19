@@ -46,6 +46,7 @@ const store = new Vuex.Store({
     userName: "",
     loginToken: "",
     allTweets: [],
+    follows: [],
   },
 
   getters: {
@@ -57,6 +58,10 @@ const store = new Vuex.Store({
       return state.userName;
     },
 
+    getUserId(state) {
+      return state.userId;
+    },
+
     getLoginToken(state) {
       return state.loginToken;
     },
@@ -65,8 +70,16 @@ const store = new Vuex.Store({
       return state.allTweets.filter((tweet) => tweet.userId == state.userId);
     },
 
+    getMyStream(state) {
+      return state.allTweets.filter((tweet) => tweet.userId == state.userId);
+    },
+
     getAllTweets(state) {
       return state.allTweets;
+    },
+
+    getFollows(state) {
+      return state.follows;
     },
   },
 
@@ -95,6 +108,10 @@ const store = new Vuex.Store({
 
     SET_TWEETS(state, payload) {
       state.allTweets = payload;
+    },
+
+    SET_FOLLOWS(state, payload) {
+      state.follows = payload;
     },
   },
 
@@ -173,6 +190,7 @@ const store = new Vuex.Store({
 
       axios
         .post("https://tweeterest.ml/api/tweets", content)
+        .then(console.log)
         .catch((response) => console.log(response));
     },
 
@@ -189,10 +207,34 @@ const store = new Vuex.Store({
         });
     },
 
-    deleteTweet(state, payload) {
-      console.log(payload);
+    refreshFollows({ state, commit }) {
+      axios
+        .get(" https://tweeterest.ml/api/follows ", { userId: state.userId })
+        .then((response) => {
+          if (response.status === 200) {
+            commit("SET_FOLLOWS", response.data);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
 
-      axios.delete("https://tweeterest.ml/api/tweets", payload);
+    deleteTweet(state, payload) {
+      axios.delete("https://tweeterest.ml/api/tweets", { data: payload });
+    },
+
+    followUser({ state, dispatch }, payload) {
+      axios
+        .post("https://tweeterest.ml/api/follows", {
+          loginToken: state.loginToken,
+          followId: payload,
+        })
+        .then((response) => response.map((user) => user.userId))
+        .then((response) => dispatch("refreshFollows", response))
+        .catch((error) => {
+          console.log(error);
+        });
     },
   },
 

@@ -23,7 +23,6 @@ export default {
   methods: {
     refresh() {
       this.$store.dispatch("refreshTweets");
-      console.log(this.tweets);
     },
   },
 
