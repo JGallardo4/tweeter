@@ -1,6 +1,10 @@
 <template>
   <article class="tweet">
-    <button @click="deleteTweet()" id="delete-button">
+    <button
+      v-if="userId == tweet.userId"
+      @click="deleteTweet()"
+      id="delete-button"
+    >
       <div id="delete-icon"><font-awesome-icon icon="times" /></div>
     </button>
 

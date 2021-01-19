@@ -53,6 +53,7 @@ export default {
   methods: {
     postTweet() {
       this.$store.dispatch("postTweet", this.input);
+      this.input = "";
     },
   },
 };
