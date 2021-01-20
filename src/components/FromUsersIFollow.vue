@@ -1,5 +1,5 @@
 <template>
-  <section id="discover">
+  <section id="my-tweets">
     <button @click="refresh()" id="refresh-button">
       Refresh
     </button>
@@ -12,11 +12,11 @@
 import TweetGrid from "../components/TweetGrid.vue";
 
 export default {
-  name: "discover",
+  name: "from-users-i-follow",
 
   computed: {
     tweets() {
-      return this.$store.getters.getAllTweets;
+      return this.$store.getters.getUserTweets;
     },
   },
 
@@ -43,7 +43,7 @@ export default {
   outline: inherit;
 }
 
-#discover {
+#my-tweets {
   grid-template-rows: auto 1fr;
   #refresh-button {
     justify-self: right;

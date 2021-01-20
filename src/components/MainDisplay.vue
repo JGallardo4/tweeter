@@ -20,15 +20,15 @@
 <script>
 import MyStream from "../components/MyStream.vue";
 import Discover from "../components/Discover.vue";
-import MyTweets from "../components/MyTweets.vue";
 import NewTweet from "../components/NewTweet.vue";
+import Debug from "../components/Debug.vue";
 
 export default {
   components: {
     MyStream,
     Discover,
-    MyTweets,
     NewTweet,
+    Debug,
   },
 
   name: "main-display",
@@ -36,7 +36,7 @@ export default {
   data: function() {
     return {
       currentTab: "My Stream",
-      tabs: ["My Stream", "Discover", "My Tweets", "New Tweet"],
+      tabs: ["My Stream", "Discover", "New Tweet", "Debug"],
     };
   },
 
@@ -81,6 +81,7 @@ export default {
   #tabs {
     grid-row: 1;
     display: flex;
+    justify-content: left;
     border-bottom: solid 1px black;
     button {
       @include resetButton;

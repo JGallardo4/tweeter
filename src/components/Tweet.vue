@@ -13,13 +13,30 @@
     <section id="tweet-info">
       <button
         v-if="tweet.userId != userId"
-        @click="followUser()"
+        @click.prevent="followUser()"
         id="follow-button"
+        title="Follow this user"
       >
         <!-- <div id="tweeter-icon">
           <font-awesome-icon icon="crow" />
         </div> -->
-        <p>Follow user</p>
+        <div id="like-icon">
+          <font-awesome-icon :icon="isFollowed ? 'user-times' : 'user-plus'" />
+        </div>
+      </button>
+
+      <button
+        v-if="userId != tweet.userId"
+        @click="toggleLikeTweet()"
+        id="like-button"
+        title="Like this tweet"
+      >
+        <div id="like-icon">
+          <font-awesome-icon
+            icon="heart"
+            :class="['like-icon', { liked: isLiked }]"
+          />
+        </div>
       </button>
       <p id="tweet-author">{{ tweet.username }}</p>
       <p id="tweet-date">{{ tweet.createdAt }}</p>
@@ -44,6 +61,12 @@ export default {
     userId() {
       return this.$store.getters.getUserId;
     },
+    isFollowed() {
+      return this.$store.getters.getFollows.includes(this.tweet.userId);
+    },
+    isLiked() {
+      return true;
+    },
   },
 
   methods: {
@@ -56,8 +79,16 @@ export default {
       this.$store.dispatch("refreshTweets");
     },
 
-    followUser() {
-      this.$store.dispatch("followUser", this.tweet.userId);
+    toggleFollow() {
+      this.isFollowed
+        ? this.$store.dispatch("unfollowUser", this.tweet.userId)
+        : this.$store.dispatch("followUser", this.tweet.userId);
+    },
+
+    toggleLikeTweet() {
+      this.isLiked
+        ? this.$store.dispatch("likeTweet", this.tweet.tweetId)
+        : this.$store.dispatch("unlikeTweet", this.tweet.tweetId);
     },
   },
 };
@@ -102,6 +133,12 @@ export default {
     justify-content: right;
     gap: 1rem;
     padding: 1rem;
+  }
+
+  #like-icon {
+    .liked {
+      color: rgb(214, 76, 99);
+    }
   }
 }
 </style>

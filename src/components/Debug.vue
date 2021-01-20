@@ -1,33 +1,22 @@
 <template>
-  <section id="discover">
+  <section id="debug">
     <button @click="refresh()" id="refresh-button">
       Refresh
     </button>
-
-    <tweet-grid :tweets="tweets"></tweet-grid>
+    <!-- <p v-for="(user, id) in users" :key="id"></p> -->
   </section>
 </template>
 
 <script>
-import TweetGrid from "../components/TweetGrid.vue";
-
 export default {
-  name: "discover",
-
-  computed: {
-    tweets() {
-      return this.$store.getters.getAllTweets;
-    },
-  },
+  name: "debug",
 
   methods: {
     refresh() {
-      this.$store.dispatch("refreshTweets");
+      this.$store
+        .dispatch("getUsers")
+        .then((response) => console.log(response));
     },
-  },
-
-  components: {
-    TweetGrid,
   },
 };
 </script>

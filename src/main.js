@@ -6,15 +6,24 @@ import Vuex from "vuex";
 import VuexPersistence from "vuex-persist";
 import cookies from "vue-cookies";
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faUser, faTimes, faCrow } from "@fortawesome/free-solid-svg-icons";
+import {
+  faUser,
+  faUserPlus,
+  faUserTimes,
+  faTimes,
+  faCrow,
+  faHeart,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
-library.add(faUser, faTimes, faCrow);
+library.add(faUser, faUserPlus, faUserTimes, faTimes, faCrow, faHeart);
 
 Vue.component("font-awesome-icon", FontAwesomeIcon);
 
 axios.defaults.headers.common["X-Api-Key"] =
   "1Rj5dMCW6aOfA75kbtKt6Gcatc5M9Chc6IGwJKe4YdhDD";
+
+axios.defaults.baseURL = "https://tweeterest.ml/api";
 
 Vue.config.productionTip = false;
 Vue.prototype.$axios = axios;
@@ -119,7 +128,7 @@ const store = new Vuex.Store({
     logIn({ commit }, payload) {
       return new Promise((resolve, reject) => {
         axios
-          .post("https://tweeterest.ml/api/login", payload)
+          .post("/login", payload)
           .then((response) => {
             if (response.status === 201) {
               commit("SET_AUTHENTICATED", true);
@@ -156,13 +165,14 @@ const store = new Vuex.Store({
     register({ commit }, payload) {
       return new Promise((resolve, reject) => {
         axios
-          .post("https://tweeterest.ml/api/users", payload)
+          .post("/users", payload)
           .then((response) => {
             if (response.status === 201) {
               commit("SET_AUTHENTICATED", true);
               commit("SET_USERID", response.data.userId);
               commit("SET_USERNAME", response.data.username);
               commit("SET_LOGIN_TOKEN", response.data.loginToken);
+              redirect("/");
               resolve(response);
             } else {
               reject(response);
@@ -188,15 +198,12 @@ const store = new Vuex.Store({
         content: payload,
       };
 
-      axios
-        .post("https://tweeterest.ml/api/tweets", content)
-        .then(console.log)
-        .catch((response) => console.log(response));
+      axios.post("/tweets", content).catch((response) => console.log(response));
     },
 
     refreshTweets({ commit, state }) {
       axios
-        .get("https://tweeterest.ml/api/tweets", { userId: state.userId })
+        .get("/tweets", { userId: state.userId })
         .then((response) => {
           if (response.status === 200) {
             commit("SET_TWEETS", response.data);
@@ -209,10 +216,13 @@ const store = new Vuex.Store({
 
     refreshFollows({ state, commit }) {
       axios
-        .get(" https://tweeterest.ml/api/follows ", { userId: state.userId })
+        .get("/follows", { userId: state.userId })
         .then((response) => {
           if (response.status === 200) {
-            commit("SET_FOLLOWS", response.data);
+            commit(
+              "SET_FOLLOWS",
+              response.data.map((user) => user.userId)
+            );
           }
         })
         .catch((error) => {
@@ -221,17 +231,56 @@ const store = new Vuex.Store({
     },
 
     deleteTweet(state, payload) {
-      axios.delete("https://tweeterest.ml/api/tweets", { data: payload });
+      axios.delete("/tweets", { data: payload });
     },
 
-    followUser({ state, dispatch }, payload) {
+    followUser({ getters }, payload) {
+      console.log({
+        loginToken: getters.getLoginToken,
+        followId: payload.toString(),
+      });
+
       axios
-        .post("https://tweeterest.ml/api/follows", {
-          loginToken: state.loginToken,
-          followId: payload,
-        })
+        .post(
+          "/follows",
+          {
+            loginToken: getters.getLoginToken,
+            followId: payload.toString(),
+          },
+          {
+            headers: {
+              "X-Api-Key": "1Rj5dMCW6aOfA75kbtKt6Gcatc5M9Chc6IGwJKe4YdhDD",
+            },
+            validateStatus: function(status) {
+              return status == 204;
+            },
+          }
+        )
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+
+    unfollowUser({ getters, dispatch }, payload) {
+      var content = {
+        loginToken: getters.getLoginToken,
+        followId: payload,
+      };
+
+      axios
+        .delete("/follows", content)
         .then((response) => response.map((user) => user.userId))
         .then((response) => dispatch("refreshFollows", response))
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+
+    getUsers() {
+      axios
+        .get("/users")
+        .then((response) => response.data.map((user) => user.userId))
+        .then(console.log)
         .catch((error) => {
           console.log(error);
         });

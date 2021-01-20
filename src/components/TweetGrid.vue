@@ -34,7 +34,7 @@ export default {
 
   .tweet {
     border: solid 1px black;
-    min-height: 10rem;
+    height: 10rem;
   }
 }
 </style>
