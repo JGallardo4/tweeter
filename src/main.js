@@ -75,14 +75,6 @@ const store = new Vuex.Store({
       return state.loginToken;
     },
 
-    getUserTweets(state) {
-      return state.allTweets.filter((tweet) => tweet.userId == state.userId);
-    },
-
-    getMyStream(state) {
-      return state.allTweets.filter((tweet) => tweet.userId == state.userId);
-    },
-
     getAllTweets(state) {
       return state.allTweets;
     },
@@ -216,7 +208,15 @@ const store = new Vuex.Store({
 
     refreshFollows({ state, commit }) {
       axios
-        .get("/follows", { userId: state.userId })
+        .request({
+          url: "/follows",
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Api-Key": "1Rj5dMCW6aOfA75kbtKt6Gcatc5M9Chc6IGwJKe4YdhDD",
+          },
+          params: { userId: state.userId },
+        })
         .then((response) => {
           if (response.status === 200) {
             commit(
@@ -234,43 +234,35 @@ const store = new Vuex.Store({
       axios.delete("/tweets", { data: payload });
     },
 
-    followUser({ getters }, payload) {
-      console.log({
-        loginToken: getters.getLoginToken,
-        followId: payload.toString(),
-      });
-
+    followUser({ dispatch }, payload) {
       axios
-        .post(
-          "/follows",
-          {
-            loginToken: getters.getLoginToken,
-            followId: payload.toString(),
+        .request({
+          url: "/follows",
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Api-Key": "1Rj5dMCW6aOfA75kbtKt6Gcatc5M9Chc6IGwJKe4YdhDD",
           },
-          {
-            headers: {
-              "X-Api-Key": "1Rj5dMCW6aOfA75kbtKt6Gcatc5M9Chc6IGwJKe4YdhDD",
-            },
-            validateStatus: function(status) {
-              return status == 204;
-            },
-          }
-        )
+          data: payload,
+        })
+        .then(dispatch("refreshFollows"))
         .catch((error) => {
           console.log(error);
         });
     },
 
-    unfollowUser({ getters, dispatch }, payload) {
-      var content = {
-        loginToken: getters.getLoginToken,
-        followId: payload,
-      };
-
+    unfollowUser({ dispatch }, payload) {
       axios
-        .delete("/follows", content)
-        .then((response) => response.map((user) => user.userId))
-        .then((response) => dispatch("refreshFollows", response))
+        .request({
+          url: "/follows",
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Api-Key": "1Rj5dMCW6aOfA75kbtKt6Gcatc5M9Chc6IGwJKe4YdhDD",
+          },
+          data: payload,
+        })
+        .then(dispatch("refreshFollows"))
         .catch((error) => {
           console.log(error);
         });
@@ -281,6 +273,46 @@ const store = new Vuex.Store({
         .get("/users")
         .then((response) => response.data.map((user) => user.userId))
         .then(console.log)
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+
+    likeTweet(state, payload) {
+      axios
+        .request({
+          url: "/tweet-likes",
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Api-Key": "1Rj5dMCW6aOfA75kbtKt6Gcatc5M9Chc6IGwJKe4YdhDD",
+          },
+          data: payload,
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+
+    refreshLikes() {
+      axios
+        .get("/tweet-likes", this.tweet.tweetId)
+        .then((response) => response.data.map((user) => user.userId))
+        .then((response) => (this.likedBy = response))
+        .catch(console.log);
+    },
+
+    unlikeTweet(state, payload) {
+      axios
+        .request({
+          url: "/tweet-likes",
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Api-Key": "1Rj5dMCW6aOfA75kbtKt6Gcatc5M9Chc6IGwJKe4YdhDD",
+          },
+          params: payload,
+        })
         .catch((error) => {
           console.log(error);
         });

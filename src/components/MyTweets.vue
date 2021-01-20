@@ -16,7 +16,9 @@ export default {
 
   computed: {
     tweets() {
-      return this.$store.getters.getUserTweets;
+      return this.$store.getters.getAllTweets.filter(
+        (tweet) => tweet.userId == this.$store.getters.getUserId
+      );
     },
   },
 

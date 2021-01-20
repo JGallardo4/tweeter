@@ -11,33 +11,38 @@
     <p id="tweet-content">{{ tweet.content }}</p>
 
     <section id="tweet-info">
-      <button
-        v-if="tweet.userId != userId"
-        @click.prevent="followUser()"
-        id="follow-button"
-        title="Follow this user"
-      >
-        <!-- <div id="tweeter-icon">
-          <font-awesome-icon icon="crow" />
-        </div> -->
-        <div id="like-icon">
-          <font-awesome-icon :icon="isFollowed ? 'user-times' : 'user-plus'" />
-        </div>
-      </button>
+      <form @submit.prevent="toggleFollow()">
+        <button
+          v-if="tweet.userId != userId"
+          type="submit"
+          id="follow-button"
+          title="Follow this user"
+        >
+          <div id="follow-icon">
+            <font-awesome-icon
+              :icon="isFollowed ? 'user-times' : 'user-plus'"
+            />
+          </div>
+        </button>
+      </form>
 
-      <button
-        v-if="userId != tweet.userId"
-        @click="toggleLikeTweet()"
-        id="like-button"
-        title="Like this tweet"
-      >
-        <div id="like-icon">
-          <font-awesome-icon
-            icon="heart"
-            :class="['like-icon', { liked: isLiked }]"
-          />
-        </div>
-      </button>
+      <form @submit.prevent="toggleLikeTweet()">
+        <button
+          v-if="userId != tweet.userId"
+          type="submit"
+          id="like-button"
+          title="Like this tweet"
+        >
+          <div id="like-icon">
+            <font-awesome-icon
+              icon="heart"
+              :class="['like-icon', { liked: isLiked }]"
+            />
+            <span id="likes-counter">{{ numberOfLikes }}</span>
+          </div>
+        </button>
+      </form>
+
       <p id="tweet-author">{{ tweet.username }}</p>
       <p id="tweet-date">{{ tweet.createdAt }}</p>
     </section>
@@ -47,6 +52,10 @@
 <script>
 export default {
   name: "Tweet",
+
+  data: function() {
+    return { likedBy: [] };
+  },
 
   props: {
     tweet: {
@@ -65,7 +74,10 @@ export default {
       return this.$store.getters.getFollows.includes(this.tweet.userId);
     },
     isLiked() {
-      return true;
+      return this.likedBy.includes(this.$store.getters.getUserId);
+    },
+    numberOfLikes() {
+      return this.likedBy.length;
     },
   },
 
@@ -81,14 +93,26 @@ export default {
 
     toggleFollow() {
       this.isFollowed
-        ? this.$store.dispatch("unfollowUser", this.tweet.userId)
-        : this.$store.dispatch("followUser", this.tweet.userId);
+        ? this.$store.dispatch("unfollowUser", {
+            loginToken: this.loginToken,
+            followId: this.tweet.userId,
+          })
+        : this.$store.dispatch("followUser", {
+            loginToken: this.loginToken,
+            followId: this.tweet.userId,
+          });
     },
 
     toggleLikeTweet() {
       this.isLiked
-        ? this.$store.dispatch("likeTweet", this.tweet.tweetId)
-        : this.$store.dispatch("unlikeTweet", this.tweet.tweetId);
+        ? this.$store.dispatch("unlikeTweet", {
+            loginToken: this.loginToken,
+            tweetId: this.tweet.tweetId,
+          })
+        : this.$store.dispatch("likeTweet", {
+            loginToken: this.loginToken,
+            tweetId: this.tweet.tweetId,
+          });
     },
   },
 };
@@ -138,6 +162,9 @@ export default {
   #like-icon {
     .liked {
       color: rgb(214, 76, 99);
+    }
+    #likes-counter {
+      padding-left: 1rem;
     }
   }
 }
