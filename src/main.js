@@ -8,15 +8,28 @@ import cookies from "vue-cookies";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
   faUser,
-  faUserPlus,
   faUserTimes,
+  faUserCheck,
+  faUserPlus,
   faTimes,
   faCrow,
   faHeart,
+  faPen,
+  faUndo,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
-library.add(faUser, faUserPlus, faUserTimes, faTimes, faCrow, faHeart);
+library.add(
+  faUser,
+  faUserTimes,
+  faUserCheck,
+  faUserPlus,
+  faTimes,
+  faCrow,
+  faHeart,
+  faPen,
+  faUndo
+);
 
 Vue.component("font-awesome-icon", FontAwesomeIcon);
 
@@ -28,21 +41,6 @@ axios.defaults.baseURL = "https://tweeterest.ml/api";
 Vue.config.productionTip = false;
 Vue.prototype.$axios = axios;
 Vue.use(Vuex);
-
-var redirect = function(route) {
-  if (router.currentRoute != route) {
-    router.push(route).catch((error) => {
-      if (
-        error.name !== "NavigationDuplicated" &&
-        !error.message.includes(
-          "Avoided redundant navigation to current location"
-        )
-      ) {
-        console.log(error);
-      }
-    });
-  }
-};
 
 const vuexLocal = new VuexPersistence({
   storage: window.localStorage,
@@ -117,7 +115,7 @@ const store = new Vuex.Store({
   },
 
   actions: {
-    logIn({ commit }, payload) {
+    logIn({ commit, dispatch }, payload) {
       return new Promise((resolve, reject) => {
         axios
           .post("/login", payload)
@@ -127,7 +125,7 @@ const store = new Vuex.Store({
               commit("SET_USERID", response.data.userId);
               commit("SET_USERNAME", response.data.username);
               commit("SET_LOGIN_TOKEN", response.data.loginToken);
-              redirect("/");
+              dispatch("redirect", "/");
               resolve(response);
             } else {
               reject(response);
@@ -139,14 +137,14 @@ const store = new Vuex.Store({
       });
     },
 
-    logOut({ commit }) {
+    logOut({ commit, dispatch }) {
       commit("DELETE_USERDATA");
-      redirect("/login");
+      dispatch("redirect", "/login");
     },
 
     checkLogin({ dispatch }) {
       if (this.getters.getIsAuthenticated) {
-        redirect("/");
+        dispatch("redirect", "/");
       } else {
         if (router.currentRoute != "/login") {
           dispatch("logOut");
@@ -154,7 +152,7 @@ const store = new Vuex.Store({
       }
     },
 
-    register({ commit }, payload) {
+    register({ commit, dispatch }, payload) {
       return new Promise((resolve, reject) => {
         axios
           .post("/users", payload)
@@ -164,7 +162,7 @@ const store = new Vuex.Store({
               commit("SET_USERID", response.data.userId);
               commit("SET_USERNAME", response.data.username);
               commit("SET_LOGIN_TOKEN", response.data.loginToken);
-              redirect("/");
+              dispatch("redirect", "/");
               resolve(response);
             } else {
               reject(response);
@@ -185,12 +183,12 @@ const store = new Vuex.Store({
     },
 
     postTweet({ getters }, payload) {
-      var content = {
-        loginToken: getters.getLoginToken,
-        content: payload,
-      };
-
-      axios.post("/tweets", content).catch((response) => console.log(response));
+      axios
+        .post("/tweets", {
+          loginToken: getters.getLoginToken,
+          content: payload,
+        })
+        .catch((response) => console.log(response));
     },
 
     refreshTweets({ commit, state }) {
@@ -316,6 +314,21 @@ const store = new Vuex.Store({
         .catch((error) => {
           console.log(error);
         });
+    },
+
+    redirect(state, route) {
+      if (router.currentRoute != route) {
+        router.push(route).catch((error) => {
+          if (
+            error.name !== "NavigationDuplicated" &&
+            !error.message.includes(
+              "Avoided redundant navigation to current location"
+            )
+          ) {
+            console.log(error);
+          }
+        });
+      }
     },
   },
 

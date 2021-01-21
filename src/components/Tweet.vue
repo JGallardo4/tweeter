@@ -11,16 +11,45 @@
     <p id="tweet-content">{{ tweet.content }}</p>
 
     <section id="tweet-info">
+      <form @submit.prevent="editTweet()">
+        <router-link
+          :to="{
+            name: 'Edit',
+            params: { tweetId: this.tweet.tweetId },
+          }"
+        >
+          <button
+            v-if="userId == tweet.userId"
+            type="submit"
+            id="edit-button"
+            title="Edit this Tweet"
+          >
+            <div id="edit-icon">
+              <font-awesome-icon icon="pen" />
+            </div>
+          </button>
+        </router-link>
+      </form>
+
       <form @submit.prevent="toggleFollow()">
         <button
           v-if="tweet.userId != userId"
           type="submit"
           id="follow-button"
-          title="Follow this user"
+          :title="isFollowed ? 'Unfollow this user' : 'Follow this user'"
+          @mouseover="isHoverFollow = true"
+          @mouseleave="isHoverFollow = false"
         >
           <div id="follow-icon">
             <font-awesome-icon
-              :icon="isFollowed ? 'user-times' : 'user-plus'"
+              :icon="
+                isFollowed
+                  ? isHoverFollow
+                    ? 'user-times'
+                    : 'user-check'
+                  : 'user-plus'
+              "
+              :class="['follow-icon', { followed: isFollowed }]"
             />
           </div>
         </button>
@@ -31,7 +60,9 @@
           v-if="userId != tweet.userId"
           type="submit"
           id="like-button"
-          title="Like this tweet"
+          :title="isLiked ? 'Unlike this tweet' : 'Like this tweet'"
+          @mouseover="isHoverLike = true"
+          @mouseleave="isHoverLike = false"
         >
           <div id="like-icon">
             <font-awesome-icon
@@ -54,7 +85,11 @@ export default {
   name: "Tweet",
 
   data: function() {
-    return { likedBy: [] };
+    return {
+      likedBy: [],
+      isHoverLike: false,
+      isHoverFollow: false,
+    };
   },
 
   props: {
@@ -114,6 +149,10 @@ export default {
             tweetId: this.tweet.tweetId,
           });
     },
+
+    editTweet() {
+      this.$store.dispatch("redirectAction", "edit");
+    },
   },
 };
 </script>
@@ -132,7 +171,7 @@ export default {
 .tweet {
   display: grid;
   grid-template-columns: 1fr auto;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: 3rem 1fr auto;
 
   #delete-button {
     grid-column: 2;
@@ -148,6 +187,7 @@ export default {
     grid-column: 1 / 3;
     grid-row: 2;
     padding: 1rem;
+    place-self: center;
   }
 
   #tweet-info {
@@ -166,6 +206,27 @@ export default {
     #likes-counter {
       padding-left: 1rem;
     }
+  }
+
+  #follow-icon {
+    .followed {
+      color: rgb(79, 165, 79);
+      &:hover {
+        color: rgb(214, 76, 99);
+      }
+    }
+    #likes-counter {
+      padding-left: 1rem;
+    }
+  }
+
+  #like-button,
+  #follow-button {
+    @include resetButton;
+  }
+
+  #edit-button {
+    @include resetButton;
   }
 }
 </style>
