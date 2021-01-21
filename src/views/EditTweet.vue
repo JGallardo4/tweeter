@@ -17,23 +17,26 @@
           {{ totalCharacters }} / 140 characters
         </p>
 
-        <router-link to="/">
-          <button type="submit" id="cancel-button">
-            <div id="cancel-icon">
-              <font-awesome-icon icon="undo" />
-            </div>
-            <span>Cancel</span>
-          </button>
-        </router-link>
+        <section id="buttons">
+          <router-link to="/">
+            <button type="submit" id="cancel-button">
+              <span id="cancel-icon">
+                <font-awesome-icon icon="undo" />
+              </span>
 
-        <button
-          :disabled="isOverLimit"
-          :class="{ disabled: isOverLimit }"
-          type="submit"
-          id="submit-tweet"
-        >
-          Edit Tweet
-        </button>
+              <span>Cancel</span>
+            </button>
+          </router-link>
+
+          <button
+            :disabled="isOverLimit"
+            :class="{ disabled: isOverLimit }"
+            type="submit"
+            id="submit-button"
+          >
+            Edit Tweet
+          </button>
+        </section>
       </fieldset>
     </form>
   </section>
@@ -158,7 +161,16 @@ export default {
         }
       }
 
-      #submit-tweet {
+      #buttons {
+        display: flex;
+        justify-content: space-between;
+        #cancel-button {
+        }
+      }
+
+      #submit-button,
+      #cancel-button {
+        grid-row: 3;
         @include resetButton;
         border: 1px solid black;
         background-color: black;

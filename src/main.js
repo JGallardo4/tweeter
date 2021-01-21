@@ -16,6 +16,7 @@ import {
   faHeart,
   faPen,
   faUndo,
+  faComment,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
@@ -28,7 +29,8 @@ library.add(
   faCrow,
   faHeart,
   faPen,
-  faUndo
+  faUndo,
+  faComment
 );
 
 Vue.component("font-awesome-icon", FontAwesomeIcon);
@@ -309,7 +311,7 @@ const store = new Vuex.Store({
             "Content-Type": "application/json",
             "X-Api-Key": "1Rj5dMCW6aOfA75kbtKt6Gcatc5M9Chc6IGwJKe4YdhDD",
           },
-          params: payload,
+          data: payload,
         })
         .catch((error) => {
           console.log(error);

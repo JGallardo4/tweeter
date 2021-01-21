@@ -11,19 +11,14 @@
     <p id="tweet-content">{{ tweet.content }}</p>
 
     <section id="tweet-info">
-      <form @submit.prevent="editTweet()">
+      <form @submit.prevent="editTweet()" v-if="userId == tweet.userId">
         <router-link
           :to="{
             name: 'Edit',
             params: { tweetId: this.tweet.tweetId },
           }"
         >
-          <button
-            v-if="userId == tweet.userId"
-            type="submit"
-            id="edit-button"
-            title="Edit this Tweet"
-          >
+          <button type="submit" id="edit-button" title="Edit this Tweet">
             <div id="edit-icon">
               <font-awesome-icon icon="pen" />
             </div>
@@ -31,9 +26,8 @@
         </router-link>
       </form>
 
-      <form @submit.prevent="toggleFollow()">
+      <form @submit.prevent="toggleFollow()" v-if="tweet.userId != userId">
         <button
-          v-if="tweet.userId != userId"
           type="submit"
           id="follow-button"
           :title="isFollowed ? 'Unfollow this user' : 'Follow this user'"
@@ -55,9 +49,8 @@
         </button>
       </form>
 
-      <form @submit.prevent="toggleLikeTweet()">
+      <form @submit.prevent="toggleLikeTweet()" v-if="userId != tweet.userId">
         <button
-          v-if="userId != tweet.userId"
           type="submit"
           id="like-button"
           :title="isLiked ? 'Unlike this tweet' : 'Like this tweet'"
@@ -74,6 +67,13 @@
         </button>
       </form>
 
+      <button type="submit" id="comment-button">
+        <div id="comment-icon">
+          <font-awesome-icon icon="comment" />
+          <span id="comments-counter">{{ numberOfComments }}</span>
+        </div>
+      </button>
+
       <p id="tweet-author">{{ tweet.username }}</p>
       <p id="tweet-date">{{ tweet.createdAt }}</p>
     </section>
@@ -86,6 +86,7 @@ export default {
 
   data: function() {
     return {
+      comments: [],
       likedBy: [],
       isHoverLike: false,
       isHoverFollow: false,
@@ -114,6 +115,13 @@ export default {
     numberOfLikes() {
       return this.likedBy.length;
     },
+    numberOfComments() {
+      return this.comments.length;
+    },
+  },
+
+  mounted() {
+    this.refreshLikedBy();
   },
 
   methods: {
@@ -148,10 +156,33 @@ export default {
             loginToken: this.loginToken,
             tweetId: this.tweet.tweetId,
           });
+
+      this.refreshLikedBy();
     },
 
     editTweet() {
       this.$store.dispatch("redirectAction", "edit");
+    },
+
+    refreshLikedBy() {
+      this.$axios
+        .request({
+          url: "/tweet-likes",
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Api-Key": "1Rj5dMCW6aOfA75kbtKt6Gcatc5M9Chc6IGwJKe4YdhDD",
+          },
+          params: { tweetId: this.tweet.tweetId },
+        })
+        .then((response) => {
+          if (response.status === 200) {
+            this.likedBy = response.data.map((user) => user.userId);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
   },
 };
@@ -203,9 +234,6 @@ export default {
     .liked {
       color: rgb(214, 76, 99);
     }
-    #likes-counter {
-      padding-left: 1rem;
-    }
   }
 
   #follow-icon {
@@ -215,14 +243,17 @@ export default {
         color: rgb(214, 76, 99);
       }
     }
-    #likes-counter {
-      padding-left: 1rem;
-    }
   }
 
   #like-button,
-  #follow-button {
+  #follow-button,
+  #comment-button {
     @include resetButton;
+  }
+
+  #comments-counter,
+  #likes-counter {
+    padding-left: 0.4rem;
   }
 
   #edit-button {
