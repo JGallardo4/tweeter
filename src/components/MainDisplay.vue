@@ -21,14 +21,12 @@
 import MyStream from "../components/MyStream.vue";
 import Discover from "../components/Discover.vue";
 import NewTweet from "../components/NewTweet.vue";
-import Debug from "../components/Debug.vue";
 
 export default {
   components: {
     MyStream,
     Discover,
     NewTweet,
-    Debug,
   },
 
   name: "main-display",
@@ -36,7 +34,7 @@ export default {
   data: function() {
     return {
       currentTab: "My Stream",
-      tabs: ["My Stream", "Discover", "New Tweet", "Debug"],
+      tabs: ["My Stream", "Discover", "New Tweet"],
     };
   },
 
@@ -102,6 +100,13 @@ export default {
     grid-row: 2;
     min-height: 50vh;
     display: grid;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  #main-display {
+    padding: 2px;
+    gap: 2px;
   }
 }
 </style>

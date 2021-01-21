@@ -27,12 +27,20 @@ export default {
   place-self: stretch;
   grid-row: 2;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
   gap: 2rem;
   place-items: stretch;
 
   .tweet {
     border: solid 1px black;
+  }
+}
+
+@media screen and (max-width: 500px) {
+  .tweet-grid {
+    padding: 2px;
+    gap: 2px;
+    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
   }
 }
 </style>

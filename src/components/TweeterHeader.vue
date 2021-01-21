@@ -49,16 +49,39 @@ export default {
   outline: inherit;
 }
 
+@mixin resetLink() {
+  color: inherit;
+  text-decoration: none;
+  &:hover {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  &:active {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  &:visited {
+    color: inherit;
+    text-decoration: none;
+  }
+}
+
 header {
   display: flex;
   justify-content: space-between;
+
   #logo {
-    #tweeter-icon {
-      font-size: xx-large;
-    }
+    @include resetLink();
+
     display: grid;
     align-items: center;
     padding: 1rem;
+
+    #tweeter-icon {
+      font-size: xx-large;
+    }
   }
   #user-menu {
     display: flex;
@@ -66,9 +89,11 @@ header {
     padding: 1rem;
     gap: 1rem;
     #user-link {
+      @include resetLink();
       display: flex;
+      align-items: center;
       #user-icon {
-        padding: 1rem;
+        padding: 0.4rem;
       }
       #username {
         display: grid;

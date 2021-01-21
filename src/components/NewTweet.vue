@@ -96,7 +96,7 @@ export default {
 #new-tweet {
   display: grid;
   place-items: center;
-  min-height: 100vh;
+  height: 80vh;
   background: url("https://source.unsplash.com/random");
   background-size: cover;
   #tweet__form {
@@ -154,6 +154,24 @@ export default {
 
       #error-message {
         color: darkred;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 500px) {
+  #new-tweet {
+    #tweet__form {
+      padding: 0;
+      #tweet__fieldset {
+        padding: 3px 0 3px 0;
+        gap: 2px;
+        textarea {
+          padding: 2px;
+          font-size: 13pt;
+          width: 97vw;
+          height: 16rem;
+        }
       }
     }
   }

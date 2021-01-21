@@ -302,4 +302,15 @@ export default {
     grid-row: 4;
   }
 }
+
+@media screen and (max-width: 600px) {
+  .tweet {
+    #delete-button {
+      padding: 10px;
+    }
+    #tweet-content {
+      padding: 2px;
+    }
+  }
+}
 </style>

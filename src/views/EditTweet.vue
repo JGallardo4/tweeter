@@ -2,7 +2,7 @@
   <section id="new-tweet">
     <form action="" id="tweet__form" @submit.prevent="updateTweet()">
       <fieldset id="tweet__fieldset">
-        <legend>New Tweet</legend>
+        <legend>Edit Tweet</legend>
 
         <p id="tweet-content">
           <textarea
@@ -190,6 +190,24 @@ export default {
 
       #error-message {
         color: darkred;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 500px) {
+  #new-tweet {
+    #tweet__form {
+      padding: 0;
+      #tweet__fieldset {
+        padding: 3px 0 3px 0;
+        gap: 2px;
+        textarea {
+          padding: 2px;
+          font-size: 13pt;
+          width: 97vw;
+          height: 16rem;
+        }
       }
     }
   }
