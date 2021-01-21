@@ -55,7 +55,6 @@ const store = new Vuex.Store({
     userName: "",
     loginToken: "",
     allTweets: [],
-    follows: [],
   },
 
   getters: {

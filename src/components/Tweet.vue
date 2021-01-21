@@ -49,7 +49,7 @@
         </button>
       </form>
 
-      <form @submit.prevent="toggleLikeTweet()" v-if="userId != tweet.userId">
+      <form @click.prevent="toggleLikeTweet()" v-if="userId != tweet.userId">
         <button
           type="submit"
           id="like-button"
@@ -67,7 +67,15 @@
         </button>
       </form>
 
-      <button type="submit" id="comment-button">
+      <button
+        type="submit"
+        id="comment-button"
+        @click="
+          () => {
+            isComments = !isComments;
+          }
+        "
+      >
         <div id="comment-icon">
           <font-awesome-icon icon="comment" />
           <span id="comments-counter">{{ numberOfComments }}</span>
@@ -77,19 +85,25 @@
       <p id="tweet-author">{{ tweet.username }}</p>
       <p id="tweet-date">{{ tweet.createdAt }}</p>
     </section>
+
+    <tweeter-comments v-if="isComments" id="comments" :tweetId="tweet.tweetId">
+    </tweeter-comments>
   </article>
 </template>
 
 <script>
+import TweeterComments from "../components/TweeterComments.vue";
+
 export default {
   name: "Tweet",
 
   data: function() {
     return {
-      comments: [],
       likedBy: [],
       isHoverLike: false,
       isHoverFollow: false,
+      isComments: false,
+      numberOfComments: 0,
     };
   },
 
@@ -97,6 +111,10 @@ export default {
     tweet: {
       type: Object,
     },
+  },
+
+  components: {
+    TweeterComments,
   },
 
   computed: {
@@ -115,13 +133,11 @@ export default {
     numberOfLikes() {
       return this.likedBy.length;
     },
-    numberOfComments() {
-      return this.comments.length;
-    },
   },
 
   mounted() {
     this.refreshLikedBy();
+    this.refreshComments();
   },
 
   methods: {
@@ -184,6 +200,26 @@ export default {
           console.log(error);
         });
     },
+    refreshComments() {
+      this.$axios
+        .request({
+          url: "/comments",
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Api-Key": "1Rj5dMCW6aOfA75kbtKt6Gcatc5M9Chc6IGwJKe4YdhDD",
+          },
+          params: { tweetId: this.tweet.tweetId },
+        })
+        .then((response) => {
+          if (response.status === 200) {
+            this.numberOfComments = response.data.length;
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
   },
 };
 </script>
@@ -202,7 +238,8 @@ export default {
 .tweet {
   display: grid;
   grid-template-columns: 1fr auto;
-  grid-template-rows: 3rem 1fr auto;
+  grid-template-rows: 3rem 8rem 3rem auto;
+  height: min-content;
 
   #delete-button {
     grid-column: 2;
@@ -226,6 +263,7 @@ export default {
     grid-row: 3;
     display: flex;
     justify-content: right;
+    align-items: center;
     gap: 1rem;
     padding: 1rem;
   }
@@ -258,6 +296,10 @@ export default {
 
   #edit-button {
     @include resetButton;
+  }
+
+  #comments {
+    grid-row: 4;
   }
 }
 </style>

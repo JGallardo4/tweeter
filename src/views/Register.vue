@@ -39,10 +39,14 @@
 
             <p id="birthdate-input">
               <label for="birthdate">Birthdate</label>
-              <datepicker v-model="rawBirthdate" name="birthdate"></datepicker>
+              <datepicker
+                v-model="rawBirthdate"
+                name="birthdate"
+                class="birthday-input-picker"
+              ></datepicker>
             </p>
 
-            <p id="password-input">
+            <p id="password-input" v-if="!isEdit">
               <label for="password">Password</label>
               <input
                 type="password"
@@ -52,15 +56,30 @@
               />
             </p>
 
-            <button @click.prevent="register()" id="submit-register">
-              Register
-            </button>
+            <section id="buttons">
+              <router-link to="/profile" v-if="isEdit">
+                <button type="submit" id="back-button">
+                  <span id="back-icon">
+                    <font-awesome-icon icon="undo" />
+                  </span>
+
+                  <span id="back-button__text">Go Back</span>
+                </button>
+              </router-link>
+
+              <button
+                @click.prevent="isEdit ? updateProfile() : register()"
+                id="submit-register"
+              >
+                {{ isEdit ? "Update Profile" : "Register" }}
+              </button>
+            </section>
 
             <p id="error-message" v-if="error">
               There was an error with your email and/or password.
             </p>
           </fieldset>
-          <router-link to="login">
+          <router-link v-if="!isEdit" to="login">
             <p>Login</p>
           </router-link>
         </form>
@@ -77,6 +96,15 @@ export default {
   components: { TweeterHeader, Datepicker },
   name: "register",
 
+  props: {
+    isEdit: {
+      type: Boolean,
+      default() {
+        return false;
+      },
+    },
+  },
+
   data() {
     return {
       input: {
@@ -91,6 +119,32 @@ export default {
 
       error: false,
     };
+  },
+
+  mounted() {
+    if (this.isEdit) {
+      this.$axios
+        .request({
+          url: "/users",
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Api-Key": "1Rj5dMCW6aOfA75kbtKt6Gcatc5M9Chc6IGwJKe4YdhDD",
+          },
+          params: { userId: this.$store.getters.getUserId },
+        })
+        .then((response) => {
+          if (response.status === 200) {
+            this.input.email = response.data[0].email;
+            this.input.username = response.data[0].username;
+            this.input.bio = response.data[0].bio;
+            this.input.birthdate = response.data[0].birthdate;
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
   },
 
   computed: {
@@ -138,6 +192,29 @@ export default {
         this.error = true;
         console.log(error);
       });
+    },
+
+    updateProfile() {
+      this.$axios
+        .request({
+          url: "/users",
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Api-Key": "1Rj5dMCW6aOfA75kbtKt6Gcatc5M9Chc6IGwJKe4YdhDD",
+          },
+          data: {
+            loginToken: this.$store.getters.getLoginToken,
+            email: this.input.email,
+            username: this.input.username,
+            birthdate: this.input.birthdate,
+            bio: this.input.bio,
+          },
+        })
+        .then(this.$store.dispatch("logOut"))
+        .catch((error) => {
+          console.log(error);
+        });
     },
   },
 };
@@ -227,7 +304,24 @@ $fullhd-min: 1216px;
         padding: 1rem;
       }
 
-      #submit-register {
+      #buttons {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+      }
+
+      #birthday-input-picker {
+        cursor: pointer !important;
+        width: 100% !important;
+        & > *,
+        .vdp-datepicker * {
+          cursor: pointer !important;
+          width: 100% !important;
+        }
+      }
+
+      #submit-register,
+      #back-button {
         @include resetButton;
         border: 1px solid black;
         background-color: black;
@@ -244,6 +338,10 @@ $fullhd-min: 1216px;
 
       #error-message {
         color: darkred;
+      }
+
+      #back-button__text {
+        padding-left: 1rem;
       }
     }
   }

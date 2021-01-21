@@ -24,7 +24,7 @@
             </p>
           </fieldset>
 
-          <router-link to="register">
+          <router-link to="/register">
             <p>Register</p>
           </router-link>
         </form>

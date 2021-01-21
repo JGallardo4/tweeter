@@ -14,7 +14,7 @@
         </p>
 
         <p id="character-count" :class="{ overLimit: isOverLimit }">
-          {{ totalCharacters }} / 140 characters
+          {{ totalCharacters }} / {{ characterLimitInclusive }} characters
         </p>
 
         <button
@@ -37,6 +37,7 @@ export default {
   data: function() {
     return {
       input: "",
+      characterLimitInclusive: 200,
     };
   },
 
@@ -46,7 +47,7 @@ export default {
     },
 
     isOverLimit() {
-      return this.input.length > 200;
+      return this.input.length > this.characterLimitInclusive;
     },
   },
 

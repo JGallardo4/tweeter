@@ -4,6 +4,7 @@ import TweeterMain from "../views/TweeterMain.vue";
 import Login from "../views/Login.vue";
 import Register from "../views/Register.vue";
 import EditTweet from "../views/EditTweet.vue";
+import Profile from "../views/Profile.vue";
 
 Vue.use(VueRouter);
 
@@ -24,6 +25,7 @@ const routes = [
     path: "/register",
     name: "Register",
     component: Register,
+    props: true,
   },
 
   {
@@ -31,6 +33,12 @@ const routes = [
     name: "Edit",
     component: EditTweet,
     props: true,
+  },
+
+  {
+    path: "/profile",
+    name: "Profile",
+    component: Profile,
   },
 ];
 

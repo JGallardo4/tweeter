@@ -28,13 +28,11 @@ export default {
   grid-row: 2;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
-  grid-template-rows: auto;
   gap: 2rem;
   place-items: stretch;
 
   .tweet {
     border: solid 1px black;
-    height: 10rem;
   }
 }
 </style>

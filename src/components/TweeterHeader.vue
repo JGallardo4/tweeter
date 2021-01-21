@@ -7,7 +7,7 @@
       <p id="site-title">Tweeter</p>
     </router-link>
     <section v-if="isLoggedIn" id="user-menu">
-      <router-link to="/" id="user-link">
+      <router-link to="/profile" id="user-link">
         <div id="user-icon"><font-awesome-icon icon="user" /></div>
 
         <p id="username">{{ userName }}</p>

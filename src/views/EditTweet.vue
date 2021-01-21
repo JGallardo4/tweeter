@@ -120,6 +120,7 @@ export default {
   cursor: pointer;
   outline: inherit;
 }
+
 @include formReset;
 
 #new-tweet {
@@ -164,29 +165,26 @@ export default {
       #buttons {
         display: flex;
         justify-content: space-between;
+        #submit-button,
         #cancel-button {
-        }
-      }
-
-      #submit-button,
-      #cancel-button {
-        grid-row: 3;
-        @include resetButton;
-        border: 1px solid black;
-        background-color: black;
-        color: white;
-        font-weight: bold;
-        border-radius: 10px;
-        place-self: center;
-        padding: 1rem 1.5rem;
-        &:hover {
-          background-color: white;
-          color: black;
-        }
-        &.disabled {
-          background-color: gray;
-          color: black;
-          cursor: not-allowed;
+          grid-row: 3;
+          @include resetButton;
+          border: 1px solid black;
+          background-color: black;
+          color: white;
+          font-weight: bold;
+          border-radius: 10px;
+          place-self: center;
+          padding: 1rem 1.5rem;
+          &:hover {
+            background-color: white;
+            color: black;
+          }
+          &.disabled {
+            background-color: gray;
+            color: black;
+            cursor: not-allowed;
+          }
         }
       }
 
