@@ -22,6 +22,11 @@ export default {
     },
   },
 
+  mounted() {
+    this.$store.dispatch("refreshTweets");
+    this.$store.dispatch("refreshFollows");
+  },
+
   methods: {
     refresh() {
       this.$store.dispatch("refreshTweets");

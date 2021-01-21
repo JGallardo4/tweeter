@@ -1,34 +1,6 @@
 <template>
   <article id="comments">
-    <section id="post-comment">
-      <form id="post-comment__form" action="" @submit.prevent="postComment()">
-        <fieldset id="post-comment__fieldset">
-          <legend>New Comment</legend>
-
-          <p id="comment-content">
-            <textarea
-              rows="5"
-              cols="40"
-              name="tweet-content"
-              v-model="input"
-            ></textarea>
-          </p>
-
-          <p id="character-count" :class="{ overLimit: isOverLimit }">
-            {{ totalCharacters }} / {{ characterLimitInclusive }} characters
-          </p>
-
-          <button
-            :disabled="isOverLimit"
-            :class="{ disabled: isOverLimit }"
-            type="submit"
-            id="submit-comment"
-          >
-            Post New Comment
-          </button>
-        </fieldset>
-      </form>
-    </section>
+    <comment-editor :isEdit="false" :tweetId="tweetId"></comment-editor>
     <section id="comments-list">
       <tweet-comment
         v-for="(comment, id) in comments"
@@ -41,6 +13,7 @@
 
 <script>
 import TweetComment from "../components/TweetComment.vue";
+import CommentEditor from "./CommentEditor.vue";
 export default {
   name: "tweeter-comments",
 
@@ -52,28 +25,17 @@ export default {
 
   data: function() {
     return {
-      input: "",
       comments: [],
-      characterLimitInclusive: 150,
     };
   },
 
   components: {
     TweetComment,
+    CommentEditor,
   },
 
   mounted() {
     this.refreshComments();
-  },
-
-  computed: {
-    totalCharacters() {
-      return this.input.length;
-    },
-
-    isOverLimit() {
-      return this.input.length > this.characterLimitInclusive;
-    },
   },
 
   methods: {
@@ -91,31 +53,6 @@ export default {
         .then((response) => {
           if (response.status === 200) {
             this.comments = response.data;
-          }
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    },
-
-    postComment() {
-      this.$axios
-        .request({
-          url: "/comments",
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "X-Api-Key": "1Rj5dMCW6aOfA75kbtKt6Gcatc5M9Chc6IGwJKe4YdhDD",
-          },
-          data: {
-            loginToken: this.$store.getters.getLoginToken,
-            tweetId: this.tweetId,
-            content: this.input,
-          },
-        })
-        .then((response) => {
-          if (response.status === 201) {
-            this.refreshComments();
           }
         })
         .catch((error) => {
@@ -157,50 +94,11 @@ export default {
     }
   }
 }
+
 @include formReset;
-#post-comment {
-  padding: 0.5rem;
-  #post-comment__fieldset {
-    padding: 0.5rem;
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-template-rows: 1fr auto;
-    gap: 1rem;
 
-    #comment-content {
-      textarea {
-        width: 100%;
-        max-width: 100%;
-      }
-    }
-
-    #character-count {
-      justify-self: right;
-      &.overLimit {
-        color: red;
-      }
-    }
-
-    #submit-comment {
-      @include resetButton;
-      border: 1px solid black;
-      background-color: black;
-      color: white;
-      font-weight: bold;
-      border-radius: 10px;
-      place-self: center;
-      padding: 1rem 1.5rem;
-      &:hover {
-        background-color: white;
-        color: black;
-      }
-      &.disabled {
-        background-color: gray;
-        color: black;
-        cursor: not-allowed;
-      }
-    }
-  }
+#comments {
+  grid-column: 1 / 3;
 }
 
 #comments-list {
